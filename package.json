@@ -1,0 +1,20 @@
+{
+  "name": "marca-ponto",
+  "version": "1.0.0",
+  "description": "Marcador de ponto para turnos diarios com relátorios ao final de periodo",
+  "homepage": "https://github.com/ominixjs/Marca-ponto#readme",
+  "bugs": {
+    "url": "https://github.com/ominixjs/Marca-ponto/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ominixjs/Marca-ponto.git"
+  },
+  "license": "ISC",
+  "author": "ominixjs",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

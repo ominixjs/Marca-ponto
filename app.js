@@ -6,7 +6,12 @@ const PORT = 8080;
 import dotenv from "dotenv";
 dotenv.config();
 
+// Memoria
 import session from "express-session";
+
+// Cryptar
+import bcrypt, { hash } from "bcrypt";
+const saltRounds = 10;
 
 // pasta para arquivos
 app.use(express.static("public"));
@@ -64,7 +69,7 @@ const db = [
     name: "Mariana Oliveira",
     birthday: "1998-11-05",
     email: "mariana.oliveira@email.com",
-    password: "mariolive98",
+    password: "$2b$10$1VeiF2qA7bQehgE/TqUz5ugmOLtuTOXsNJdo6BELWnG0R65LdkVyu",
   },
 ];
 
@@ -76,7 +81,7 @@ app.get("/login", (req, res) => {
   res.render("pages/login");
 });
 
-// autenticar dados
+// autenticar cliente
 app.post("/auth", (req, res) => {
   const { email, password } = req.body;
 
@@ -100,6 +105,21 @@ app.post("/auth", (req, res) => {
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
+  });
+});
+
+app.get("/register", (req, res) => {
+  res.render("pages/register");
+});
+
+app.post("/signup", (req, res) => {
+  const { email, password } = req.body;
+
+  if (password.lenght < 8) return;
+
+  bcrypt.hash(password, saltRounds, function (err, hash) {
+    db.push({ id: db.length + 1, email, password: hash });
+    res.json(db);
   });
 });
 

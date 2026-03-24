@@ -65,7 +65,7 @@ const db = [
 ];
 
 app.get("/", middlewareAuth, (req, res) => {
-  res.render("index");
+  res.render("index", { user: req.user });
 });
 
 app.get("/login", (req, res) => {
@@ -91,7 +91,7 @@ app.post("/auth", (req, res) => {
     { id: db.length + 1, email, name, birthday },
     process.env.SECRET_KEY,
     {
-      expiresIn: "1m",
+      expiresIn: "1h",
     },
   );
 

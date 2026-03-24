@@ -6,12 +6,16 @@ const PORT = 8080;
 import dotenv from "dotenv";
 dotenv.config();
 
-// Memoria
-import session from "express-session";
+import jwt from "jsonwebtoken";
 
 // Cryptar
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 const saltRounds = 10;
+
+import cookieParser from "cookie-parser";
+app.use(cookieParser());
+
+import middlewareAuth from "./middleware/middlewareAuth.js";
 
 // pasta para arquivos
 app.use(express.static("public"));
@@ -21,19 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Renderizador para o node
 app.set("view engine", "ejs");
-
-// Memoria temporária
-app.use(
-  session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: true,
-    rolling: true,
-    cookie: {
-      maxAge: 5000 * 60 * 60,
-    },
-  }),
-);
 
 const db = [
   {
@@ -69,11 +60,11 @@ const db = [
     name: "Mariana Oliveira",
     birthday: "1998-11-05",
     email: "mariana.oliveira@email.com",
-    password: "$2b$10$1VeiF2qA7bQehgE/TqUz5ugmOLtuTOXsNJdo6BELWnG0R65LdkVyu",
+    password: "mariaoliver123",
   },
 ];
 
-app.get("/", (req, res) => {
+app.get("/", middlewareAuth, (req, res) => {
   res.render("index");
 });
 
@@ -87,40 +78,50 @@ app.post("/auth", (req, res) => {
 
   const client = db.find((c) => c.email == email);
 
-  if (!client) res.send("Usuário não encontrado");
+  if (!client) return res.send("Usuário não encontrado");
 
-  if (client.password != password) res.send("Senha inválida!");
+  if (password != client.password) return res.send("Senha inválida");
+
+  // const passwordValide = await bcrypt(password, client.password);
+  // if (!passwordValide) return res.send("Senha inválida");
 
   const { name, birthday } = client;
 
-  req.session.loggedUser = {
-    name,
-    email,
-    birthday,
-  };
+  const token = jwt.sign(
+    { id: db.length + 1, email, name, birthday },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: "1m",
+    },
+  );
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false, // true em produção HTTPS
+    sameSite: "strict",
+  });
 
   res.redirect("/");
 });
 
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
-  });
+  res.clearCookie("token");
+  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {
   res.render("pages/register");
 });
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
 
   if (password.lenght < 8) return;
 
-  bcrypt.hash(password, saltRounds, function (err, hash) {
-    db.push({ id: db.length + 1, email, password: hash });
-    res.json(db);
-  });
+  const hash = bcrypt.hash(password, saltRounds);
+
+  db.push({ id: db.length + 1, email, password: hash });
+  res.json(db);
 });
 
 app.listen(PORT, () => {

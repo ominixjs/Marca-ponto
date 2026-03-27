@@ -1,4 +1,76 @@
 <%- include('layouts/head') %>
 <h1>Ola, seja bem vindo <%= user.name %></h1>
 <a href="/logout">Sair</a>
+
+<hr />
+<h3>Pegando horario</h3>
+<p id="time">null</p>
+<button type="button" id="btn_save_time">Salvar</button>
+<ul id="list_save"></ul>
+<script>
+  class Save {
+    Render(container, time) {
+      this.li = document.createElement("li");
+      this.li.textContent = time;
+
+      container.appendChild(this.li);
+    }
+  }
+
+  // Imprimir valor no frontend
+  const timeTxt = document.getElementById("time");
+
+  // Obtem o horario atualizado
+  const timeSheet = [];
+  let getTime;
+
+  // Atualizar o horario
+  setInterval(() => {
+    getTime = new Date().toLocaleTimeString();
+    if (!timeTxt) return;
+    timeTxt.textContent = getTime;
+  }, 1000);
+
+  // Validar marcação
+  function validateBooking(time) {
+    if (timeSheet.length < 1) return;
+
+    // Marcação anterior
+    const prevTime = timeSheet[timeSheet.length - 1];
+    const [prevH, prevM] = prevTime.split(":");
+
+    const [h, m] = time.split(":");
+
+    const validateHour = Number(h) === Number(prevH);
+    const validateMinute = Number(m) > Number(prevM) + 10;
+
+    console.log(validateHour);
+  }
+
+  // Cria uma lista
+  function createList(list) {
+    const container = document.getElementById("list_save");
+    if (!container) return;
+    container.innerHTML = "";
+
+    list.forEach((item) => {
+      new Save().Render(container, item);
+    });
+  }
+
+  // Marcar o horario
+  const btnSave = document.getElementById("btn_save_time");
+  if (btnSave) {
+    btnSave.addEventListener("click", () => {
+      // Validar se a marcação teve um intervalo de tempo
+      validateBooking(getTime);
+
+      // Salva marcação
+      timeSheet.push(getTime);
+
+      // Cria uma lista nova sempre que houver uma marcação
+      createList(timeSheet);
+    });
+  }
+</script>
 <%- include('layouts/footer') %>

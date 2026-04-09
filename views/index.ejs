@@ -1,11 +1,20 @@
 <%- include('layouts/head') %>
-<h1>Ola, seja bem vindo <%= user.name %></h1>
+<h1>
+    Ola, seja bem vindo
+    <%= user.name %>
+</h1>
 <a href="/logout">Sair</a>
-
 <hr />
 <h3>Pegando horario</h3>
-<p id="time">null</p>
+<p id="time">00:00:00</p>
 <button type="button" id="btn_save_time">Salvar</button>
-<ul id="list_save"></ul>
+
+<!-- Lista de pontos do dia -->
+<ul id="list_save">
+    <% point.forEach(p => { %>
+    <li><%= p %></li>
+    <%})%>
+</ul>
+
 <script type="module" src="/js/main.js"></script>
 <%- include('layouts/footer') %>

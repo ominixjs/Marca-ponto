@@ -127,7 +127,7 @@ app.get("/register", middlewareAuth, (req, res) => {
     res.render("pages/register");
 });
 
-app.post("/signup", middlewareAuth, async (req, res) => {
+app.post("/signup", async (req, res) => {
     const { email, password } = req.body;
 
     if (password.lenght < 8) return;
@@ -138,7 +138,7 @@ app.post("/signup", middlewareAuth, async (req, res) => {
     res.json(db);
 });
 
-app.get("/logout", (req, res) => {
+app.get("/logout", middlewareAuth, (req, res) => {
     res.clearCookie("token");
     res.redirect("/login");
 });

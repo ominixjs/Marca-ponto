@@ -1,20 +1,98 @@
 <%- include('layouts/head') %>
-<h1>
-    Ola, seja bem vindo
-    <%= user.name %>
-</h1>
-<a href="/logout">Sair</a>
-<hr />
-<h3>Pegando horario</h3>
-<p id="time">00:00:00</p>
-<button type="button" id="btn_save_time">Salvar</button>
+<%- include('layouts/navbar') %>
 
-<!-- Lista de pontos do dia -->
-<ul id="list_save">
-    <% point.forEach(p => { %>
-    <li><%= p %></li>
-    <%})%>
-</ul>
+<main class="container">
+    <h2>
+        Seja bem vindo
+        <span><%= user.name %></span>
+    </h2>
+    <hr />
 
-<script type="module" src="/js/main.js"></script>
+    <section class="record">
+        <div class="myRecord">
+            <div class="card-header">
+                <div>
+                    <h3>Marcar ponto:</h3>
+                    <p id="time" class="number-style">00:00:00</p>
+                </div>
+                <button type="button" class="button-default" id="btn_save_time">
+                    Marcar
+                </button>
+            </div>
+            <!-- Lista de pontos do dia -->
+            <ol id="list_save">
+                <% point.forEach(p => { %>
+                <li class="number-style"><%= p %></li>
+                <%})%>
+            </ol>
+        </div>
+        <div class="myCourses">
+            <div class="card-header">
+                <div>
+                    <h3>Minhas Avaliações:</h3>
+                    <p>
+                        Lorem Ipsum is simply dummy text of the printing and
+                        typesetting industry.
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="button-default">
+                Fazer Avaliações
+            </button>
+        </div>
+        <div class="blck blck1">Trabalhando...</div>
+        <div class="blck blck2">Trabalhando...</div>
+        <div class="blck blck3">Trabalhando...</div>
+        <div class="blck blck4">Trabalhando...</div>
+        <div class="blck blck4">Trabalhando...</div>
+    </section>
+</main>
+
+<script>
+    // Variavel padrão para salvar a marcação temporariamente
+    let getTime = null;
+
+    // Imprimir valor no frontend
+    const timeTxt = document.getElementById("time");
+    if (timeTxt) {
+        // Atualizar o horario
+        setInterval(() => {
+            getTime = new Date().toLocaleTimeString();
+            timeTxt.textContent = getTime;
+        }, 1000);
+    }
+
+    // Envia para o banco de dados
+    function sendData(sheet) {
+        fetch("/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sheet),
+        })
+            .then((response) => response.text())
+            .then((response) => alert(response))
+            .catch((err) => {
+                console.error("Erro ao finalizar tarefa");
+            });
+    }
+
+    // Marcar o horario
+    const btnSave = document.getElementById("btn_save_time");
+    if (btnSave) {
+        btnSave.addEventListener("click", () => {
+            // Verifica se esta marcando o horario
+            if (!getTime) return;
+
+            sendData({
+                date: new Date().toLocaleDateString(),
+                markingRecord: getTime,
+            });
+
+            // Atualiza a seção
+            window.location.reload();
+
+            getTime = null;
+        });
+    }
+</script>
 <%- include('layouts/footer') %>

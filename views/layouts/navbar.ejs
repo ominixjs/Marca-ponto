@@ -3,13 +3,30 @@
         <img src="img/logo.png" class="logo" alt="logo da empresa" />
     </a>
     <nav class="navbar">
-        <a href="#menu"><img src="img/user.png" alt="foto de perfil" /></a>
-        <div class="dropdown" id="menu">
+        <div class="navbar-profile">
+            <div>
+                <h4><%= user.name %></h4>
+                <p class="number-style">
+                    <%= new Date().toLocaleDateString() %>
+                </p>
+            </div>
+            <img src="img/user.png" alt="foto de perfil" />
+        </div>
+        <button
+            type="button"
+            class="button-icon"
+            id="btn_dropdown"
+            title="menu"
+        >
+            <i class="fi fi-br-menu-dots-vertical"></i>
+        </button>
+        <div class="dropdown" id="dropdown">
             <ul>
-                <li><a href="/">Meu perfil</a></li>
-                <li><a href="/" class="active">Marcar ponto</a></li>
-                <li><a href="/">Folha de pagamento</a></li>
-                <li><a href="/">Sair</a></li>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/">Marcar ponto</a></li>
+                <li><a href="/profile">Meu perfil</a></li>
+                <li><a href="/payroll">Folha de pagamento</a></li>
+                <li><a href="/logout">Sair</a></li>
             </ul>
         </div>
         <a href="/logout" title="sair"><i class="fi fi-br-exit"></i></a>

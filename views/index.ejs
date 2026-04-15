@@ -2,12 +2,6 @@
 <%- include('layouts/navbar') %>
 
 <main class="container">
-    <h2>
-        Seja bem vindo
-        <span><%= user.name %></span>
-    </h2>
-    <hr />
-
     <section class="record">
         <div class="myRecord">
             <div class="card-header">
@@ -20,11 +14,11 @@
                 </button>
             </div>
             <!-- Lista de pontos do dia -->
-            <ol id="list_save">
+            <ul class="load-records">
                 <% point.forEach(p => { %>
                 <li class="number-style"><%= p %></li>
                 <%})%>
-            </ol>
+            </ul>
         </div>
         <div class="myCourses">
             <div class="card-header">
@@ -48,6 +42,7 @@
     </section>
 </main>
 
+<script src="js/main.js"></script>
 <script>
     // Variavel padrão para salvar a marcação temporariamente
     let getTime = null;
@@ -95,4 +90,5 @@
         });
     }
 </script>
+
 <%- include('layouts/footer') %>

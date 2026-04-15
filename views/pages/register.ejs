@@ -1,25 +1,39 @@
 <%- include('../layouts/head') %>
-<h1>Entrar</h1>
-<form action="/signup" method="post">
-  <label for="email">Email</label>
-  <input
-    type="text"
-    name="email"
-    id="email"
-    placeholder="Seu email"
-    value="carlos.martins@email.com"
-  />
+<section class="container">
+    <h1>Primeiro Acesso</h1>
+    <form action="/auth" method="post">
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" placeholder="Seu email" />
 
-  <br />
-  <label for="password">Senha</label>
-  <input
-    type="password"
-    name="password"
-    id="password"
-    placeholder="Sua senha"
-    value="carlose89"
-  />
-  <br /><br />
-  <button type="submit" id="btn_login">Entrar</button>
-</form>
+        <br />
+        <label for="password">Senha</label>
+        <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Sua senha"
+        />
+        <br />
+        <label for="password">Repita a Senha</label>
+        <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Repita a senha"
+        />
+        <br /><br />
+        <button type="submit" class="button-default" id="btn_login">
+            Entrar
+        </button>
+    </form>
+    <br />
+    <hr />
+    <p>Faça seu cadatro em um click</p>
+    <br />
+    <a href="/register"
+        ><button type="button" class="button-default">Cadastro</button></a
+    >
+</section>
+
+<script src="js/main.js"></script>
 <%- include('../layouts/footer') %>

@@ -123,7 +123,7 @@ app.post("/auth", (req, res) => {
     res.redirect("/");
 });
 
-app.get("/register", middlewareAuth, (req, res) => {
+app.get("/register", (req, res) => {
     res.render("pages/register");
 });
 

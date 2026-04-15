@@ -101,14 +101,14 @@ app.post("/auth", (req, res) => {
 
     if (password != client.password) return res.send("Senha inválida");
 
-    // const passwordValide = await bcrypt(password, client.password);
-    // if (!passwordValide) return res.send("Senha inválida");
+    // const validePassword = await bcrypt(password, client.password);
+    // if (!validePassword) return res.send("Senha inválida");
 
     const { name, birthday, pointSheet } = client;
 
     const token = jwt.sign(
         { id: db.length + 1, email, name, birthday, pointSheet },
-        process.env.SECRET_KEY,
+        process.env.JWT_KEY,
         {
             expiresIn: "1h",
         },

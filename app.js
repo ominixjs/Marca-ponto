@@ -1,33 +1,36 @@
 import express from "express";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import cookieParser from "cookie-parser";
+import middlewareAuth from "./middleware/middlewareAuth.js";
+import validatePoint from "./js/getPointDay.js";
+import validateRecord from "./js/ValidateRecord.js";
+
+// Servidor
 const app = express();
 const PORT = 8080;
 
-// Informações
-import dotenv from "dotenv";
+// Senhas
 dotenv.config();
-import jwt from "jsonwebtoken";
 
-import bcrypt from "bcrypt";
-const saltRounds = 10;
-
-import cookieParser from "cookie-parser";
+// Dados entre rotas
 app.use(cookieParser());
 
-import middlewareAuth from "./middleware/middlewareAuth.js";
-
-import validatePoint from "./js/getPointDay.js";
-import validateRecord from "./js/ValidateRecord.js";
+// Criptografia de senhas
+const saltRounds = 10;
 
 // pasta para arquivos
 app.use(express.static("public"));
 
-// Decodifica URL
+// Decodificação da URL
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Renderizador para o node
+// Renderizador HTML
 app.set("view engine", "ejs");
 
+// DB temporário. usar Mysql e Sequelize
 const db = [
     {
         id: 1,
@@ -80,6 +83,7 @@ const db = [
     },
 ];
 
+// Homepage
 app.get("/", middlewareAuth, (req, res) => {
     const sheet = validatePoint(req.user, db);
     const point = sheet.timeSheet || [];
@@ -87,11 +91,12 @@ app.get("/", middlewareAuth, (req, res) => {
     res.render("index", { user: req.user, point: point });
 });
 
+// Login
 app.get("/login", (req, res) => {
     res.render("pages/login");
 });
 
-// autenticar cliente
+// Autenticação
 app.post("/auth", (req, res) => {
     const { email, password } = req.body;
 
@@ -123,10 +128,12 @@ app.post("/auth", (req, res) => {
     res.redirect("/");
 });
 
+// Primeiro acesso
 app.get("/register", (req, res) => {
     res.render("pages/register");
 });
 
+// Autenticar primeiro acesso
 app.post("/signup", async (req, res) => {
     const { email, password } = req.body;
 
@@ -138,11 +145,13 @@ app.post("/signup", async (req, res) => {
     res.json(db);
 });
 
+// Sair do login
 app.get("/logout", middlewareAuth, (req, res) => {
     res.clearCookie("token");
     res.redirect("/login");
 });
 
+// Registrar marcação de ponto
 app.post("/report", middlewareAuth, (req, res) => {
     const { date, markingRecord } = req.body;
     const { email } = req.user;

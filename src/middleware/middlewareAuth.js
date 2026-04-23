@@ -1,0 +1,20 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+import jwt from "jsonwebtoken";
+
+export default function middlewareAuth(req, res, next) {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.redirect("/company");
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.redirect("/company");
+    }
+}

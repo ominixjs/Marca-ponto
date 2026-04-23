@@ -1,0 +1,100 @@
+<%- include('../layouts/head') %>
+<%- include('../layouts/navbar') %>
+<section class="container">
+    <div class="myProfile">
+        <div class="card myPhoto">
+            <img src="<%= photo %>" alt="foto de perfil" />
+            <form action="/user" method="POST" enctype="multipart/form-data">
+                <label class="file-button mb">
+                    Selecionar imagem
+                    <input
+                        type="file"
+                        id="fileInput"
+                        name="photo"
+                        accept="image/*"
+                    />
+                </label>
+
+                <span id="fileName">Nenhum arquivo escolhido</span>
+
+                <button type="submit" class="button-default mb">Salvar</button>
+            </form>
+        </div>
+        <div class="card myAddress">
+            <h3>Endereço:</h3>
+            <div class="myInfo">
+                <div class="text">
+                    <h4>Estado:</h4>
+                    <p><%= address.state %></p>
+                </div>
+                <div class="text">
+                    <h4>Cidade:</h4>
+                    <p><%= address.city %></p>
+                </div>
+                <div class="text">
+                    <h4>Distrito:</h4>
+                    <p><%= address.district %></p>
+                </div>
+                <div class="text">
+                    <h4>Endereço:</h4>
+                    <p><%= address.street %></p>
+                </div>
+                <div class="text">
+                    <h4>Numero:</h4>
+                    <p><%= address.number %></p>
+                </div>
+                <div class="text">
+                    <h4>CEP:</h4>
+                    <p><%= address.zipCode %></p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Cadastro:</h3>
+            <div class="myInfo">
+                <div class="text">
+                    <h4>Nome Completo:</h4>
+                    <p><%= name %></p>
+                </div>
+                <div class="text">
+                    <h4>Nascimento:</h4>
+                    <p><%= birthday %></p>
+                </div>
+                <div class="text">
+                    <h4>CPF:</h4>
+                    <p><%= cpf %></p>
+                </div>
+                <div class="text">
+                    <h4>PIS:</h4>
+                    <p><%= pis %></p>
+                </div>
+                <div class="text">
+                    <h4>Nacionalidade:</h4>
+                    <p><%= nationality %></p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Meu Acesso:</h3>
+            <div class="text">
+                <h4>Email</h4>
+                <p><%= email %></p>
+            </div>
+            <div class="text">
+                <h4>Trocar senha:</h4>
+            </div>
+            <a href="/" class="button-default">Trocar senha</a>
+        </div>
+    </div>
+</section>
+<script src="js/main.js"></script>
+<script>
+    const input = document.getElementById("fileInput");
+    const fileName = document.getElementById("fileName");
+
+    input.addEventListener("change", () => {
+        fileName.textContent =
+            input.files[0]?.name || "Nenhum arquivo escolhido";
+    });
+</script>
+<%- include('../layouts/footer') %>

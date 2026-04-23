@@ -1,16 +1,16 @@
 <header>
-    <a href="/">
+    <a href="/dashboard">
         <img src="img/logo.png" class="logo" alt="logo da empresa" />
     </a>
     <nav class="navbar">
         <div class="navbar-profile">
             <div>
-                <h4><%= user.name %></h4>
+                <h4><%= name %></h4>
                 <p class="number-style">
                     <%= new Date().toLocaleDateString() %>
                 </p>
             </div>
-            <img src="img/user.png" alt="foto de perfil" />
+            <img src="<%= photo %>" alt="foto de perfil" />
         </div>
         <button
             type="button"
@@ -22,11 +22,11 @@
         </button>
         <div class="dropdown" id="dropdown">
             <ul>
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/">Marcar ponto</a></li>
+                <li><a href="/dashboard">Inicio</a></li>
+                <li><a href="/dashboard">Marcar ponto</a></li>
                 <li><a href="/profile">Meu perfil</a></li>
                 <li><a href="/payroll">Folha de pagamento</a></li>
-                <li><a href="/logout">Sair</a></li>
+                <li><a href="/logout" style="color: red">Sair</a></li>
             </ul>
         </div>
         <a href="/logout" title="sair"><i class="fi fi-br-exit"></i></a>

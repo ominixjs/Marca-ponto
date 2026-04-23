@@ -1,5 +1,7 @@
 <%- include('../layouts/head') %>
+<%- include('../layouts/navbar-logout') %>
 <section class="container">
+    <h1><%= companyName %></h1>
     <h1>Entrar</h1>
     <form action="/auth" method="post">
         <label for="email">Email</label>
@@ -27,10 +29,12 @@
     </form>
     <br />
     <hr />
-    <p>Faça seu cadatro em um click</p>
+    <p>Faça seu primeiro acesso aqui</p>
     <br />
     <a href="/register"
-        ><button type="button" class="button-default">Cadastro</button></a
+        ><button type="button" class="button-default">
+            Primeiro acesso
+        </button></a
     >
 </section>
 

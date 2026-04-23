@@ -1,187 +1,108 @@
 import express from "express";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import session from "express-session";
 import cookieParser from "cookie-parser";
-import middlewareAuth from "./middleware/middlewareAuth.js";
-import validatePoint from "./js/getPointDay.js";
-import validateRecord from "./js/ValidateRecord.js";
+import path from "path";
+import { db } from "./src/db/db.js";
+import middlewareAuth from "./src/middleware/middlewareAuth.js";
+import validateRecord from "./src/validators/validateRecord.js";
+import getPointDay from "./src/repository/recordRepository.js";
+import userRoutes from "./src/routers/userRoutes.js";
+import authRoutes from "./src/routers/authRoutes.js";
+import reportRouter from "./src/routers/reportRouter.js";
 
-// Servidor
+//========= Servidor =============================
 const app = express();
 const PORT = 8080;
 
-// Senhas
-dotenv.config();
-
-// Dados entre rotas
+//=========== Dados entre rotas ==================
 app.use(cookieParser());
 
-// Criptografia de senhas
-const saltRounds = 10;
-
-// pasta para arquivos
+//========= pasta para arquivos ==================
 app.use(express.static("public"));
 
-// Decodificação da URL
+//========== Decodificação da URL ================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Renderizador HTML
+//============ Senhas ============================
+dotenv.config();
+
+//=========== Seção temporária ===================
+app.use(
+    session({
+        name: "session-id",
+        secret: process.env.SESSION_KEY,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: false, // true se usar HTTPS
+            httpOnly: true,
+            maxAge: 1000 * 60 * 15, // 15 hora
+        },
+    }),
+);
+
+//============= Renderizador HTML ================
 app.set("view engine", "ejs");
 
-// DB temporário. usar Mysql e Sequelize
-const db = [
-    {
-        id: 1,
-        name: "Ana Beatriz Lima",
-        birthday: "1995-04-12",
-        email: "ana.lima@email.com",
-        password: "ana12345",
-        pointSheet: [],
-    },
-    {
-        id: 2,
-        name: "Carlos Eduardo Martins",
-        birthday: "1989-09-21",
-        email: "carlos.martins@email.com",
-        password: "carlose89",
-        pointSheet: [
-            {
-                date: "03/04/2026",
-                timeSheet: ["16:16:37", "16:16:39", "16:17:13", "16:17:16"],
-            },
-            {
-                date: "04/04/2026",
-                timeSheet: ["16:16:37", "16:16:39", "16:17:13", "16:17:16"],
-            },
-        ],
-    },
-    {
-        id: 3,
-        name: "Juliana Ferreira",
-        birthday: "2001-01-30",
-        email: "juliana.ferreira@email.com",
-        password: "juli2001",
-        pointSheet: [],
-    },
-    {
-        id: 4,
-        name: "Rafael Costa",
-        birthday: "1993-06-18",
-        email: "rafael.costa@email.com",
-        password: "rafa123",
-        pointSheet: [],
-    },
-    {
-        id: 5,
-        name: "Mariana Oliveira",
-        birthday: "1998-11-05",
-        email: "mariana.oliveira@email.com",
-        password: "mariaoliver123",
-        pointSheet: [],
-    },
-];
+//================================================
+app.set("views", path.resolve("views"));
+
+//============== Routes ==========================
+app.use(authRoutes);
+app.use(userRoutes);
+app.use(reportRouter);
 
 // Homepage
-app.get("/", middlewareAuth, (req, res) => {
-    const sheet = validatePoint(req.user, db);
+app.get("/dashboard", middlewareAuth, (req, res) => {
+    const { companyId, userId } = req.user;
+    const company = db.find((c) => c.id === companyId);
+    const user = company.collaborators.find((c) => c.id === userId);
+    if (!user) return res.redirect("/login");
+
+    const sheet = getPointDay(companyId, userId);
     const point = sheet.timeSheet || [];
 
-    res.render("index", { user: req.user, point: point });
-});
-
-// Login
-app.get("/login", (req, res) => {
-    res.render("pages/login");
-});
-
-// Autenticação
-app.post("/auth", (req, res) => {
-    const { email, password } = req.body;
-
-    const client = db.find((c) => c.email == email);
-
-    if (!client) return res.send("Usuário não encontrado");
-
-    if (password != client.password) return res.send("Senha inválida");
-
-    // const validePassword = await bcrypt(password, client.password);
-    // if (!validePassword) return res.send("Senha inválida");
-
-    const { name, birthday, pointSheet } = client;
-
-    const token = jwt.sign(
-        { id: db.length + 1, email, name, birthday, pointSheet },
-        process.env.JWT_KEY,
-        {
-            expiresIn: "1h",
-        },
-    );
-
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: false, // true em produção HTTPS
-        sameSite: "strict",
+    res.render("index", {
+        name: user.name,
+        photo: user.photo,
+        point: point,
     });
-
-    res.redirect("/");
 });
 
-// Primeiro acesso
-app.get("/register", (req, res) => {
-    res.render("pages/register");
+// Perfil
+app.get("/profile", middlewareAuth, (req, res) => {
+    const { companyId, userId } = req.user;
+    const company = db.find((c) => c.id === companyId);
+    const user = company.collaborators.find((c) => c.id === userId);
+    if (!user) return res.redirect("/login");
+
+    res.render("pages/profile", {
+        photo: user.photo,
+        name: user.name,
+        email: user.email,
+        birthday: user.birthday,
+        cpf: user.cpf,
+        pis: user.pis,
+        nationality: user.nationality,
+        address: user.address,
+    });
 });
 
-// Autenticar primeiro acesso
-app.post("/signup", async (req, res) => {
-    const { email, password } = req.body;
-
-    if (password.lenght < 8) return;
-
-    const hash = bcrypt.hash(password, saltRounds);
-
-    db.push({ id: db.length + 1, email, password: hash });
-    res.json(db);
+app.get("/company-acess", (req, res) => {
+    res.render("pages/company");
 });
 
-// Sair do login
-app.get("/logout", middlewareAuth, (req, res) => {
-    res.clearCookie("token");
+app.post("/identify-company", (req, res) => {
+    const { hostname } = req.body;
+
+    const company = db.find((c) => c.hostname === hostname);
+    if (!company) return res.redirect("/company-acess");
+
+    req.session.sessionId = company.id;
+
     res.redirect("/login");
-});
-
-// Registrar marcação de ponto
-app.post("/report", middlewareAuth, (req, res) => {
-    const { date, markingRecord } = req.body;
-    const { email } = req.user;
-
-    // Procura pelo cliente para manuseio de dados
-    const client = db.find((c) => c.email === email);
-    if (!client) return res.send("usuário não encontrado");
-
-    // Busca no DB se há registro do dia
-    const verifyRecord = client.pointSheet.find((p) => p.date === date);
-
-    // Primeira marcação do dia
-    if (!verifyRecord) {
-        client.pointSheet.push({ date, timeSheet: [markingRecord] });
-        return res.send("Primeira marcação do dia");
-    }
-
-    // Verfica se ja foram os 4 registros do dia
-    if (verifyRecord.timeSheet.length >= 4) {
-        return res.send("Marcaçõe do dia já foram feitas");
-    }
-
-    // Envio a array de marcações e a marcação atual
-    if (!validateRecord(verifyRecord, markingRecord)) {
-        return res.send("Aguarde alguns minutos!");
-    }
-
-    // Caso ocorra tudo Ok, marca o segundo registro
-    verifyRecord.timeSheet.push(markingRecord);
-    res.send("Enviado com sucesso!");
 });
 
 app.listen(PORT, () => {

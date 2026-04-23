@@ -24,7 +24,7 @@ i {
     display: inline-flex;
 }
 
-p {
+p, span {
     font-weight: 300;
     color: #373737;
 }
@@ -73,12 +73,13 @@ button {
 }
 
 .button-default {
+    display: block;
     padding: 0.5rem 2rem;
     border-radius: 8px;
     background-color: #108ded;
     color: #fff;
     font-size: 0.9em;
-    font-weight: 400;
+    font-weight: bold;
     /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.205); */
 
     transition: background-color 300ms ease;

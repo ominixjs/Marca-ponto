@@ -1,0 +1,26 @@
+<%- include('../layouts/head') %>
+<%- include('../layouts/navbar-logout') %>
+<section class="container">
+    <h1>Sua companhia</h1>
+    <form action="/identify-company" method="post">
+        <label for="hostname">Companhia</label>
+        <input
+            type="text"
+            name="hostname"
+            id="hostname"
+            placeholder="Companhia"
+            value="loja.ponto.com.br"
+            required
+        />
+
+        <br />
+
+        <br /><br />
+        <button type="submit" class="button-default" id="btn_login">
+            Entrar
+        </button>
+    </form>
+</section>
+
+<script src="js/main.js"></script>
+<%- include('../layouts/footer') %>

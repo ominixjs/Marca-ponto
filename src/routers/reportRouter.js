@@ -12,9 +12,9 @@ router.post("/report", middlewareAuth, (req, res) => {
     const user = company.collaborators.find((c) => c.id === req.user.userId);
     if (!user) return res.redirect("/login");
 
-    const { date, markingRecord } = req.body;
+    const { date, currentRecord } = req.body;
 
-    const result = pointService(user, date, markingRecord);
+    const result = pointService(user, date, currentRecord);
 
     if (result.error) return res.send(result.error);
     res.send(result.message);

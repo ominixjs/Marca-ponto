@@ -7,7 +7,7 @@ export default function middlewareAuth(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.redirect("/company");
+        return res.redirect("/company-acess");
     }
 
     try {
@@ -15,6 +15,6 @@ export default function middlewareAuth(req, res, next) {
         req.user = decoded;
         next();
     } catch (err) {
-        return res.redirect("/company");
+        return res.redirect("/company-acess");
     }
 }

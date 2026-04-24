@@ -10,6 +10,7 @@ import getPointDay from "./src/repository/recordRepository.js";
 import userRoutes from "./src/routers/userRoutes.js";
 import authRoutes from "./src/routers/authRoutes.js";
 import reportRouter from "./src/routers/reportRouter.js";
+import "./src/repository/allRecordsRepository.js";
 
 //========= Servidor =============================
 const app = express();

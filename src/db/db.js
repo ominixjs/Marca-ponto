@@ -3,6 +3,7 @@ export const db = [
     {
         id: "875t0s46oqq6",
         name: "Loja",
+        logo: "",
         hostname: "loja.ponto.com.br",
         collaborators: [
             {
@@ -80,6 +81,15 @@ export const db = [
                     },
                     {
                         date: "17/04/2026",
+                        timeSheet: [
+                            "08:01:00",
+                            "12:01:50",
+                            "13:01:10",
+                            "17:18:25",
+                        ],
+                    },
+                    {
+                        date: "24/04/2026",
                         timeSheet: [
                             "08:01:00",
                             "12:01:50",
